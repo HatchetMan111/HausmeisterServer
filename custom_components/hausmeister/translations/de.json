@@ -1,0 +1,25 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Hausmeister einrichten",
+        "description": "Wähle die Sensoren aus, die der Hausmeister überwachen soll.",
+        "data": {
+          "watched_sensors": "Zu überwachende Sensoren"
+        }
+      }
+    },
+    "error": {
+      "no_sensors": "Bitte mindestens einen Sensor auswählen."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "sensitivity": "Empfindlichkeit (Z-Score-Schwelle)"
+        }
+      }
+    }
+  }
+}
