@@ -11,7 +11,7 @@ from .coordinator import HausmeisterCoordinator
 
 _LOGGER = logging.getLogger(__name__)
 
-type HausmeisterConfigEntry = ConfigEntry[HausmeisterCoordinator]
+HausmeisterConfigEntry = ConfigEntry[HausmeisterCoordinator]
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: HausmeisterConfigEntry) -> bool:
@@ -36,5 +36,6 @@ async def async_unload_entry(hass: HomeAssistant, entry: HausmeisterConfigEntry)
 
 
 async def _update_listener(hass: HomeAssistant, entry: HausmeisterConfigEntry) -> None:
-    """Neu laden bei Optionsänderung."""
-    await hass.config_entries.async_reload(entry.entry_id)
+    """Optionsänderungen live übernehmen statt neu zu laden (Baseline bleibt)."""
+    coordinator: HausmeisterCoordinator = hass.data[DOMAIN][entry.entry_id]
+    await coordinator.async_apply_options(entry)

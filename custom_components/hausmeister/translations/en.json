@@ -2,22 +2,30 @@
   "config": {
     "step": {
       "user": {
-        "title": "Hausmeister einrichten",
-        "description": "Wähle die Sensoren aus, die der Hausmeister überwachen soll.",
+        "title": "Set up Hausmeister",
+        "description": "Pick the sensors Hausmeister should watch. The engine learns a baseline per time of day and reports unusual deviations.",
         "data": {
-          "watched_sensors": "Zu überwachende Sensoren"
+          "watched_sensors": "Sensors to watch"
         }
       }
     },
     "error": {
-      "no_sensors": "Bitte mindestens einen Sensor auswählen."
+      "no_sensors": "Please select at least one sensor."
+    },
+    "abort": {
+      "already_configured": "Hausmeister is already configured."
     }
   },
   "options": {
     "step": {
       "init": {
+        "title": "Configure Hausmeister",
+        "description": "Changes apply immediately without losing the learned baseline.",
         "data": {
-          "sensitivity": "Empfindlichkeit (Z-Score-Schwelle)"
+          "watched_sensors": "Sensors to watch",
+          "sensitivity": "Sensitivity (Z-score threshold)",
+          "baseline_days": "Baseline period (days)",
+          "update_interval": "Analysis interval (seconds)"
         }
       }
     }

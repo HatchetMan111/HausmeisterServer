@@ -5,27 +5,41 @@ from typing import Any
 
 import voluptuous as vol
 
-from homeassistant import config_entries
+from homeassistant.config_entries import (
+    ConfigEntry,
+    ConfigFlow,
+    ConfigFlowResult,
+    OptionsFlow,
+)
 from homeassistant.core import callback
 from homeassistant.helpers import selector
-from homeassistant.data_entry_flow import FlowResult
 
 from .const import (
-    DOMAIN,
-    CONF_WATCHED_SENSORS,
+    CONF_BASELINE_DAYS,
     CONF_SENSITIVITY,
+    CONF_UPDATE_INTERVAL,
+    CONF_WATCHED_SENSORS,
+    DEFAULT_BASELINE_DAYS,
     DEFAULT_SENSITIVITY,
+    DEFAULT_UPDATE_INTERVAL,
+    DOMAIN,
+    MAX_UPDATE_INTERVAL,
+    MIN_UPDATE_INTERVAL,
 )
 
 
-class HausmeisterConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
+def _current(entry: ConfigEntry, key: str, default):
+    return entry.options.get(key, entry.data.get(key, default))
+
+
+class HausmeisterConfigFlow(ConfigFlow, domain=DOMAIN):
     """Behandelt den Config Flow."""
 
     VERSION = 1
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
+    ) -> ConfigFlowResult:
         """Erster Schritt: Sensoren auswählen."""
         errors: dict[str, str] = {}
 
@@ -45,7 +59,7 @@ class HausmeisterConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             data_schema=vol.Schema(
                 {
                     vol.Required(CONF_WATCHED_SENSORS, default=[]): selector.EntitySelector(
-                        selector.EntitySelectorConfig(multiple=True)
+                        selector.EntitySelectorConfig(domain="sensor", multiple=True)
                     ),
                 }
             ),
@@ -54,32 +68,54 @@ class HausmeisterConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     @staticmethod
     @callback
-    def async_get_options_flow(config_entry):
-        return HausmeisterOptionsFlow(config_entry)
+    def async_get_options_flow(config_entry: ConfigEntry) -> OptionsFlow:
+        return HausmeisterOptionsFlow()
 
 
-class HausmeisterOptionsFlow(config_entries.OptionsFlow):
-    """Optionen bearbeiten (Empfindlichkeit etc.)."""
+class HausmeisterOptionsFlow(OptionsFlow):
+    """Optionen: Sensoren, Empfindlichkeit, Baseline und Intervall."""
 
-    def __init__(self, config_entry) -> None:
-        self.config_entry = config_entry
-
-    async def async_step_init(self, user_input=None):
+    async def async_step_init(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
         if user_input is not None:
             return self.async_create_entry(title="", data=user_input)
 
+        entry = self.config_entry
         return self.async_show_form(
             step_id="init",
             data_schema=vol.Schema(
                 {
                     vol.Required(
+                        CONF_WATCHED_SENSORS,
+                        default=list(_current(entry, CONF_WATCHED_SENSORS, [])),
+                    ): selector.EntitySelector(
+                        selector.EntitySelectorConfig(domain="sensor", multiple=True)
+                    ),
+                    vol.Required(
                         CONF_SENSITIVITY,
-                        default=self.config_entry.options.get(
-                            CONF_SENSITIVITY, DEFAULT_SENSITIVITY
-                        ),
+                        default=_current(entry, CONF_SENSITIVITY, DEFAULT_SENSITIVITY),
                     ): selector.NumberSelector(
                         selector.NumberSelectorConfig(
-                            min=1.0, max=4.0, step=0.1, mode=selector.NumberSelectorMode.SLIDER
+                            min=1.0, max=4.0, step=0.1,
+                            mode=selector.NumberSelectorMode.SLIDER,
+                        )
+                    ),
+                    vol.Required(
+                        CONF_BASELINE_DAYS,
+                        default=_current(entry, CONF_BASELINE_DAYS, DEFAULT_BASELINE_DAYS),
+                    ): selector.NumberSelector(
+                        selector.NumberSelectorConfig(min=1, max=30, step=1)
+                    ),
+                    vol.Required(
+                        CONF_UPDATE_INTERVAL,
+                        default=_current(entry, CONF_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL),
+                    ): selector.NumberSelector(
+                        selector.NumberSelectorConfig(
+                            min=MIN_UPDATE_INTERVAL,
+                            max=MAX_UPDATE_INTERVAL,
+                            step=30,
+                            mode=selector.NumberSelectorMode.SLIDER,
                         )
                     ),
                 }
