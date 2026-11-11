@@ -2,3 +2,6 @@ __pycache__/
 *.py[cod]
 .env
 .DS_Store
+dashboard/node_modules/
+dashboard/dist/
+dashboard/dist-demo/

@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Hausmeister Card — Demo</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 24px;
+        background: #111114;
+        font-family: "Inter", system-ui, sans-serif;
+      }
+      .wrap { max-width: 760px; margin: 0 auto; }
+      hausmeister-card {
+        display: block;
+        background: var(--card-background-color, #1c1c20);
+        border-radius: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+      }
+      hausmeister-card + hausmeister-card { margin-top: 24px; }
+      p.hint { color: #6d6d75; font-size: 12px; text-align: center; }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <pre id="errbox" style="color:#f44336;font-size:11px;white-space:pre-wrap;display:none"></pre>
+      <hausmeister-card id="card"></hausmeister-card>
+      <hausmeister-card id="card-config"></hausmeister-card>
+      <p class="hint">Demo mit Mock-Daten — in Home Assistant liefert hass die echten Insights.</p>
+    </div>
+    <script>
+      window.addEventListener("error", (e) => {
+        const box = document.getElementById("errbox");
+        box.style.display = "block";
+        box.textContent += "FEHLER: " + e.message + "\n  in " + (e.filename || "?") + ":" + e.lineno + "\n";
+      });
+      window.addEventListener("unhandledrejection", (e) => {
+        const box = document.getElementById("errbox");
+        box.style.display = "block";
+        box.textContent += "REJECTION: " + e.reason + "\n";
+      });
+    </script>
+    <script type="module" src="/src/demo/main.jsx"></script>
+  </body>
+</html>
