@@ -3,7 +3,7 @@ from homeassistant.const import Platform
 
 DOMAIN = "hausmeister"
 PLATFORMS: list[Platform] = [Platform.SENSOR]
-VERSION = "0.2.0"
+VERSION = "0.3.0"
 
 # Config-Optionen
 CONF_WATCHED_SENSORS = "watched_sensors"

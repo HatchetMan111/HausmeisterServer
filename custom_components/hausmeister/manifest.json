@@ -1,7 +1,7 @@
 {
   "domain": "hausmeister",
   "name": "Hausmeister",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "codeowners": [
     "@HatchetMan111"
   ],
@@ -10,7 +10,9 @@
   "issue_tracker": "https://github.com/HatchetMan111/HausmeisterServer/issues",
   "iot_class": "calculated",
   "requirements": [],
-  "dependencies": [],
+  "dependencies": [
+    "http"
+  ],
   "loggers": [
     "custom_components.hausmeister"
   ]

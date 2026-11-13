@@ -1,12 +1,13 @@
 {
   "name": "hausmeister-card",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.3.0",
   "type": "module",
   "description": "Lovelace-Karte für die Hausmeister-Integration (React + Vite)",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:ha": "vite build && cp dist/hausmeister-card.js ../custom_components/hausmeister/hausmeister-card.js",
     "build:demo": "vite build --config vite.demo.config.js",
     "preview": "vite preview"
   },

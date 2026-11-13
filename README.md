@@ -50,22 +50,15 @@ Alle Optionen sind später über ⚙️ → **Hausmeister konfigurieren** änder
 | Baseline-Zeitraum | 14 Tage | Historie pro Tageszeit |
 | Analyse-Intervall | 300 s | Wie oft analysiert wird (30–3600 s) |
 
-## Dashboard-Karte (React + Vite)
+## Dashboard-Karte (ab v0.3.0 automatisch dabei)
 
 Die Karte zeigt alle Insights auf einen Blick: Status-Badges, Klartext-Meldung,
 Abweichung, Trend und Anomalie-Dauer — kritische Sensoren zuerst.
 
-```bash
-cd dashboard
-npm install
-npm run build          # → dist/hausmeister-card.js (eine Datei, React inklusive)
-```
-
-Installieren:
-
-1. `dist/hausmeister-card.js` nach `config/www/hausmeister-card.js` kopieren
-2. Einstellungen → Dashboards → ⋮ → Ressourcen → **JavaScript-Modul** → `/local/hausmeister-card.js`
-3. Karte per YAML hinzufügen:
+**Plug & Play:** Die Card wird mit der Integration installiert und beim
+Einrichten automatisch als Lovelace-Ressource registriert — kein Kopieren,
+keine manuelle Ressource. Einfach im Dashboard *Karte hinzufügen* →
+**Hausmeister Card** wählen (oder per YAML):
 
 ```yaml
 type: custom:hausmeister-card
@@ -75,8 +68,27 @@ title: Hausmeister
 #   - sensor.hausmeister_luftfeuchtigkeit_keller_status
 ```
 
-Demo mit Mock-Daten (ohne Home Assistant): `npm run build:demo` und `dist-demo/`
-statisch servieren, oder `npm run dev`.
+Die Card liegt unter `/hausmeister/hausmeister-card.js` und wird direkt von der
+Integration ausgeliefert (ohne Browser-Caching — HACS-Updates greifen sofort).
+
+**Sonderfall YAML-Modus:** Läuft Lovelace im YAML-Modus, kann HA die Ressource
+nicht automatisch anlegen (Warnung im Log). Dann in `lovelace/resources.yaml`
+ergänzen:
+
+```yaml
+- res_type: module
+  url: /hausmeister/hausmeister-card.js
+```
+
+Weiterentwicklung der Card (nur für Entwickler):
+
+```bash
+cd dashboard
+npm install
+npm run build:ha      # baut die Card und kopiert sie in die Integration
+npm run build:demo    # Demo mit Mock-Daten (dist-demo/ statisch servieren)
+npm run dev
+```
 
 ## Funktionsweise
 
@@ -91,7 +103,7 @@ Start wieder geladen; der Trend baut sich aus den laufenden Updates neu auf.
 
 ```bash
 python3 -m unittest tests.test_engine -v   # Engine-Tests (ohne HA)
-cd dashboard && npm run build              # Card-Bauen
+cd dashboard && npm run build:ha           # Card bauen + in Integration kopieren
 ```
 
 ## Roadmap
